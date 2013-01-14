@@ -1,0 +1,47 @@
+The general API is explained in the readme. This file assumes you already know 
+what the high-level API looks like.
+
+This scheme is divided into three layers, which go together like this:
+
+encode(pack(encrypt()))
+
+The three layers have few dependencies, and there are unit tests for each of 
+them.
+
+The most novel part is the encode layer. It takes a key, plaintext with 
+possible alternates, and value to encode. Intuitively, if the key and plaintext
+are used as the keys to a stream cipher, then it will probably be possible to 
+make the output of that stream cipher begin with a desired value if the number 
+of alternates is more than the number of bits in the value. Unfortunately that 
+would require time exponential on the number of bits to find the encoding. This 
+scheme uses a very specifically designed stream cipher which makes it possible 
+to compute which alternates to use to get the desired value in a polynomial 
+amount of time. Specifically, it uses each contiguous section of sixteen bytes
+for a stream cipher (AES in OFB mode) and xors the outputs together, and makes 
+sure that alternates have at least fifteen fixed bytes between them. The result 
+is that flipping an alternate always xors the output by a specific value, 
+independently from flipping other alternates, so it's possible to calculate 
+which alternates are needed by row reduction.
+
+Packing is an unkeyed step which adds a length prefix and unencrypted checksum 
+to the encrypted payload. In order to avoid obvious patterns in the plaintext 
+values it xors them with the hash of the first four bytes of the ciphertext 
+(it's actually a little bit more complex, but that's the basic idea). It's 
+assumed that the ciphertext is at least four bytes long and that the first four 
+bytes look fairly random, which is a reasonable assumption because the 
+ciphertext is salted.
+
+Encryption is done with a threat model assuming that encrypted messages will be 
+left in plaintext on public web servers. Obviously encoding will provide an 
+additional layer of obfuscation, but it's easier to analyze assuming that 
+obfuscation is absent. It's done with parameters which are reasonable for that 
+use case, but far less than necessary for others, a tradeoff done because bits 
+are assumed to be very precious due to the limits of the encoding step. To 
+encrypt, the first four bytes of the sha3 hash of the plaintext are taken, 
+those are included at the beginning of the ciphertext, then the plaintext 
+encrypted in OFB mode using the first four bytes padded with zeros as the salt. 
+The obvious attack is that if an attacker finds two different messages with the 
+same first four bytes of hash and knows what the plaintext is of one they can 
+find the plaintext of the other. Also if the same plaintext is encrypted twice 
+it will result in the exact some ciphertext, so an attacker can trivially 
+compare two ciphertexts to see if that's the case.
