@@ -87,14 +87,38 @@ def test_pack():
 test_pack()
 
 def remove_too_short(plaintext):
-	p2 = [plaintext[0]]
-	for i in range(1, len(plaintext), 2):
+	p2 = [b'']
+	for i in range(0, len(plaintext)-1, 2):
+		p2[-1] += plaintext[i]
 		if len(p2) > 1 and len(p2[-1]) < 15:
-			p2[-1] += plaintext[i][0] + plaintext[i+1]
+			p2[-1] += plaintext[i+1][0]
 		else:
-			p2.append(plaintext[i])
-			p2.append(plaintext[i+1])
+			a, b = plaintext[i+1]
+			j = 0
+			while j < len(a) and j < len(b) and a[j] == b[j]:
+				j += 1
+			if j:
+				p2[-1] += a[:j]
+				a = a[j:]
+				b = b[j:]
+			j = 0
+			while j < len(a) and j < len(b) and a[-j-1] == b[-j-1]:
+				j += 1
+			if j:
+				excess = a[-j:]
+				a = a[:-j]
+				b = b[:-j]
+			else:
+				excess = b''
+			p2.append([a, b])
+			p2.append(excess)
+	p2[-1] += plaintext[-1]
 	return p2
+
+assert remove_too_short([b'', [b'abc', b'aqc'], b'y']) == [b'a', [b'b', b'q'], b'cy']
+assert remove_too_short([b'x', [b'abc', b'abcd'], b'y']) == [b'xabc', [b'', b'd'], b'y']
+assert remove_too_short([b'x', [b'abc', b'dabc'], b'y']) == [b'x', [b'', b'd'], b'abcy']
+assert remove_too_short([b'x', [b'ac', b'aqc'], b'y']) == [b'xa', [b'', b'q'], b'cy']
 
 def to_bitfield(m):
 	r = []
