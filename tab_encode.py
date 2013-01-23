@@ -15,7 +15,7 @@ def tab_cover(p):
 			p = 1
 			while s[p*8:(p+1)*8] == b'        ':
 				p += 1
-			covertext.append([b'\t' * p, b'        ' * p])
+			covertext.append([b'        ' * p, b'\t' * p])
 			covertext.append(s[p*8:])
 		else:
 			covertext[-1] += s

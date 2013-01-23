@@ -23,6 +23,13 @@ is that flipping an alternate always xors the output by a specific value,
 independently from flipping other alternates, so it's possible to calculate 
 which alternates are needed by row reduction.
 
+The way that row reduction is done is currently very crude. What it really 
+should do is assume that the first value of each alternate is the less 
+suspicious one, and attempt to use as few of those as possible, by going over 
+the possible alternates in random order, row reducing each one, and throwing 
+out ones which don't add possibilities until it has exactly as many rows as 
+there are bits which need to be encoded.
+
 Packing is an unkeyed step which adds a length prefix and unencrypted checksum 
 to the encrypted payload. In order to avoid obvious patterns in the plaintext 
 values it xors them with the hash of the first four bytes of the ciphertext 
