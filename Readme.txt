@@ -144,5 +144,5 @@ Q. Why don't you use public key encryption?
 A. Because bits are precious enough for that to be unweildy, and it would 
 disallow use of arbitrary human readable strings as keys. The symmetry is 
 best viewed as a feature: because the value of a key is severely diminished 
-if it's widely known, there's a reason to horde them, which is the desired 
+if it's widely known, there's a reason to hoard them, which is the desired 
 behavior.
