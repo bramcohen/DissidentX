@@ -48,7 +48,7 @@ After you encode data with `line_ending_encoder` you can get it back out like th
 
 which will print out `payload1`. Likewise for `payload2` and `key2`.
 
-Note that `line_ending_encoder` only gets one bit per line, with overhead of seven bytes, and that repeating the same section of text repeatedly in a text file doesn't get extra bits.
+Note that `line_ending_encoder` only gets one bit per line, with overhead of seven bytes, and that encoding the same section of text repeatedly in a text file doesn't get extra bits.
 
 
 ### Encoder writing guide:
@@ -111,4 +111,4 @@ A. Yes, but those put severe restrictions on what can be done in an encoder, and
 
 __Q. Why don't you use public key encryption?__
 
-A. Because bits are precious enough for that to be unweildy, and it would disallow use of arbitrary human readable strings as keys. The symmetry is best viewed as a feature: because the value of a key is severely diminished if it's widely known, there's a reason to hoard them, which is the desired behavior.
+A. Because bits are precious enough for that to be unwieldy, and it would disallow use of arbitrary human readable strings as keys. The symmetry is best viewed as a feature: because the value of a key is severely diminished if it's widely known, there's a reason to hoard them, which is the desired behavior.
